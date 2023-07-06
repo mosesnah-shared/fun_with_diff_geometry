@@ -1,32 +1,43 @@
-function [ interp_points ] = DeCasteljau( points, N )
+function [ interp_points ] = DeCasteljau( points, Nt, k )
 % 
 % Detailed explanation goes here
 %
 % Arguments
 % ---------
-% (1) points: num_dim (nD) x num_points (nP)
-%        num_dim (nD) is the dimension where the point resides
+% (1) points: 3 x num_points (nP)
+%        The algorithm only works for 3D case. 
 %        num_points (nP) is self-explanable
-% (2) N: the number of points for the interpolation
-%        It is good for N to be sufficiently larger than the number of points (nP)
+%
+% (2) Nt: the number of points for the interpolation of t
+%        It is good for Nt to be sufficiently larger than the number of points (nP)
+%
+% (3) k: The order of polynomial, should be 1 <= k <= nP - 1
+%        If k = 0, then nothing changes. 
 
-% points should be a 2D array
-assert( ismatrix( points ) && ndims( points ) == 2 );
-
+% points should be a 2D matrix
+assert( ismatrix( points )  );
+ 
 [ nD, nP ] = size( points );
 
-% Assert that the number of points should be sufficiently large than nP
-% The rule-of-thumb number is larger than 50
-assert( N >= 50 );
-t = linspace( 0, 1, 2 + N );
+% It should be 3 Dimension
+assert( nD == 3 );
 
-% Define the interpolated points
-interp_points = zeros( nD, N );
+% Assert that Nt is sufficiently large, rule-of-thumb is more than 50
+assert( Nt >= 50 );
+t_arr = linspace( 0, 1, 2 + Nt );
 
-for i = 0 : nP
-   nchoosek( nP, i ) * ( 1 - t )^( nP - i ) * points( :, 1 ) 
-end
-    
+% Assert that k is between 1 and nP-1
+assert( k >= 1 && k <= nP - 1 )
+
+% Define a 3D matrix, with 3 x length( t_arr ) x k 
+interp_points = zeros( 3, length( t_arr ), nP - k );
+
+for i = 1 : nP-k
+    for j = 1 : k + 1
+        interp_points( :, :, i ) = interp_points( :, :, i ) + ....
+            points( :, j + ( i - 1 ) ) * nchoosek( k, j-1 ) * ( 1 - t_arr ).^( k - ( j - 1 ) ) .* t_arr.^( j - 1 );
+    end
+end    
 
 end
 
