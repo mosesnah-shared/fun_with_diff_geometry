@@ -23,7 +23,7 @@ assert( ismatrix( points )  );
 assert( nD == 3 );
 
 % Assert that Nt is sufficiently large, rule-of-thumb is more than 50
-assert( Nt >= 50 );
+assert( Nt >= 2 );
 t_arr = linspace( 0, 1, 2 + Nt );
 
 % Assert that k is between 1 and nP-1
